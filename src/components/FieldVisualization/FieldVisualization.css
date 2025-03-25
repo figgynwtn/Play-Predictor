@@ -1,0 +1,81 @@
+.field-container {
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .football-field {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(to bottom, #2e8b57, #1f6b3d);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .yard-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .yard-line {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+  }
+  
+  .play-symbol {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  .play-symbol::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  
+  .play-symbol.pass::after {
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent white;
+    right: -10px;
+  }
+  
+  .play-symbol.run::after {
+    border-width: 6px 12px 6px 0;
+    border-color: transparent white transparent transparent;
+    left: -10px;
+  }
+  
+  .confidence-badge {
+    font-size: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 2px 4px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: -15px;
+  }
+  
+  .play-type-tag {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }

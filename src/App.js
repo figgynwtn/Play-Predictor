@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import Predictor from './components/Predictor/Predictor'; // Updated path
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import BasicPredictor from './components/BasicPredictor/BasicPredictor';
+import './styles.css';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app">
+      <header>
+        <h1>🏈 AI Play Predictor (TensorFlow.js)</h1>
+        <p>Predict run/pass plays using game context</p>
       </header>
+      <ErrorBoundary fallback={<BasicPredictor />}>
+        <Predictor />
+      </ErrorBoundary>
     </div>
   );
 }
-
-export default App;

@@ -1,0 +1,36 @@
+.basic-predictor {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .basic-predictor h3 {
+    margin-top: 0;
+    color: #555;
+  }
+  
+  .basic-controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 15px 0;
+  }
+  
+  .basic-controls div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .basic-result {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+  }
+  
+  .basic-result p {
+    margin: 5px 0;
+  }

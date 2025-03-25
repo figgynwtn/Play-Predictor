@@ -1,0 +1,158 @@
+/* Base Styles */
+.predictor-app {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Team Selector */
+  .team-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .team-selector select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+  }
+  
+  /* Situation Controls */
+  .situation-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .input-group input,
+  .input-group select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  /* Prediction Button */
+  .predict-button {
+    background: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .predict-button:hover {
+    background: #3e8e41;
+  }
+  
+  .predict-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Prediction Results */
+  .prediction-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .play-details {
+    margin-top: 20px;
+  }
+  
+  .play-details h3 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .confidence-badge {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 10px;
+  }
+  
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .detail-grid div {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .detail-grid h4 {
+    color: #666;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+  }
+  
+  .detail-grid p {
+    font-weight: bold;
+    color: #222;
+  }
+  
+  /* Error Handling */
+  .error-banner {
+    background: #ffebee;
+    color: #c62828;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Animations */
+  @keyframes playFlash {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .prediction-container {
+    animation: playFlash 0.3s ease-out;
+  }
