@@ -1,17 +1,14 @@
-import { inflate } from 'pako';  // Use pako for browser decompression
+import { inflate } from 'pako';
 import Papa from 'papaparse';
 
 export async function loadNFLData() {
   try {
-    // 1. Fetch compressed file
     const response = await fetch('/data/play_by_play_2024.csv.gz');
     if (!response.ok) throw new Error('Network response failed');
 
-    // 2. Decompress with pako (browser-friendly)
     const compressed = await response.arrayBuffer();
-    const decompressed = inflate(new Uint8Array(compressed));  // <-- pako's inflate
+    const decompressed = inflate(new Uint8Array(compressed));
 
-    // 3. Parse CSV with PapaParse
     const csvText = new TextDecoder().decode(decompressed);
     return new Promise((resolve) => {
       Papa.parse(csvText, {
@@ -35,7 +32,20 @@ export async function loadNFLData() {
 export function filterTeamData(data, team, unit) {
   return data.filter(play => {
     if (unit === 'offense') return play.posteam === team;
-    if (unit === 'defense') return play.defteam === team;
-    return ['punt', 'field_goal', 'kickoff'].includes(play.play_type);
+    if (unit === 'defense') {
+      return play.defteam === team && 
+             play.play_type && 
+             ['pass', 'run'].includes(play.play_type);
+    }
+    return ['punt','field_goal','kickoff'].includes(play.play_type);
   });
+}
+
+// Yard line utilities
+export function normalizeYardLine(yardLine) {
+  return yardLine > 50 ? 100 - yardLine : yardLine;
+}
+
+export function getFieldSide(yardLine) {
+  return yardLine > 50 ? 'Opponent' : 'Your';
 }

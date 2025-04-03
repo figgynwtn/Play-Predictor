@@ -1,75 +1,93 @@
 .tendency-analysis {
-    background: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .title {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: #212529;
-    font-size: 1.25rem;
-  }
-  
-  .tendency-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .tendency-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    background: #f8f9fa;
-    border-radius: 4px;
-  }
-  
-  .tendency-label {
-    font-weight: 600;
-    color: #495057;
-  }
-  
-  .tendency-value {
-    font-weight: 700;
-    color: #212529;
-  }
-  
-  .tendency-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .tendency-bar {
-    height: 30px;
-    background: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  
-  .bar-fill {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 0.85rem;
-  }
-  
-  .bar-fill.pass {
-    background: #3b82f6;
-  }
-  
-  .bar-fill.run {
-    background: #10b981;
-  }
-  
-  .bar-label {
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  }
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--dark);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.tendency-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tendency-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #edf2f7;
+}
+
+.tendency-label {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+.tendency-value {
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.tendency-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tendency-bar {
+  height: 32px;
+  background: #edf2f7;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  position: relative;
+  transition: width 0.6s ease;
+}
+
+.bar-fill.pass {
+  background: linear-gradient(90deg, #3182ce, #63b3ed);
+}
+
+.bar-fill.run {
+  background: linear-gradient(90deg, #38a169, #68d391);
+}
+
+.bar-label {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+  z-index: 1;
+}

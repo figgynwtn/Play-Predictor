@@ -1,0 +1,233 @@
+.visualization-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: bold;
+}
+
+.football-field {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 53.3%; /* 120 yards total (100 + 20) */
+  background: #2d5f2d;
+  overflow: hidden;
+}
+
+/* End Zones (10 yards each, separate from 100-yard field) */
+.end-zone {
+  position: absolute;
+  width: 8.33%; /* 10 yards / 120 total */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 2px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.end-zone.left {
+  left: 0;
+  transform: rotate(180deg);
+}
+
+.end-zone.right {
+  right: 0;
+}
+
+/* 100-Yard Playing Field (between end zones) */
+.field-container {
+  position: absolute;
+  top: 0;
+  left: 8.33%; /* Start after left end zone (10 yards) */
+  width: 83.33%; /* 100 yards / 120 total */
+  height: 100%;
+}
+
+/* Field Markings (only in 100-yard container) */
+.field-markings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #3a7d3a, #2d5f2d);
+}
+
+/* Yard Lines (0–100, mapped to 100-yard container) */
+/* Yard Lines - Full height */
+.yard-line {
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background: white;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* Yard Numbers (only in 100-yard container) */
+.yard-number {
+  position: absolute;
+  font-family: 'Clarendon Bold', Georgia, serif;
+  font-size: 1.2rem;
+  color: white;
+  z-index: 2;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+  width: 25px;
+  text-align: center;
+}
+
+.left-digit {
+  text-align: right;
+  margin-right: 4px; /* Space between digits */
+}
+
+.right-digit {
+  text-align: left;
+  margin-left: 4px; /* Space between digits */
+}
+
+/* Yard Numbers - Adjusted if needed */
+.yard-number.top {
+  top: 22%; /* Slightly higher than hashmarks */
+}
+
+.yard-number.bottom {
+  bottom: 22%; /* Slightly higher than hashmarks */
+}
+
+.hash-mark {
+  position: absolute;
+  width: 2px;
+  background: white;
+  opacity: 0.7;
+}
+
+.top-hash {
+  height: 5%; /* Shorter length */
+  top: 40%; /* Higher vertical position */
+}
+
+.top-middle-hash {
+  height: 5%; /* Shorter length */
+  top: 0%; /* Higher vertical position */
+}
+
+.bottom-middle-hash {
+  height: 5%; /* Shorter length */
+  top: 95%;; /* Higher vertical position */
+}
+
+.bottom-hash {
+  height: 5%; /* Shorter length */
+  bottom: 40%; /* Higher vertical position */
+}
+
+/* Confidence Circles - RESTORED */
+.defense-play {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #FFA726, #FB8C00);
+}
+
+.offense-play {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  position: relative;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.offense-play.pass {
+  background: linear-gradient(135deg, #36A2EB, #1E88E5);
+  left: 30%;
+}
+
+.offense-play.run {
+  background: linear-gradient(135deg, #FF6384, #E53935);
+  left: 70%;
+}
+
+.football-confidence {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile adjustments for confidence circles */
+@media (max-width: 767px) {
+  .defense-play,
+  .offense-play {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .football-confidence {
+    font-size: 1.2rem;
+  }
+}
+
+/* Mobile-specific adjustments (added at the bottom) */
+@media (max-width: 767px) {
+  .yard-number {
+    font-size: 0.7rem;
+    width: auto;
+    padding: 0 2px;
+  }
+  
+  .yard-number.top {
+    top: 15%;
+  }
+  
+  .yard-number.bottom {
+    bottom: 15%;
+  }
+  
+  .defense-play, 
+  .offense-play {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .football-confidence {
+    font-size: 1rem;
+  }
+  
+  .play-name {
+    font-size: 0.9rem;
+  }
+  
+  .coverage-type {
+    font-size: 0.7rem;
+  }
+  
+  .end-zone {
+    font-size: 0.9rem;
+  }
+}

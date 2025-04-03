@@ -10,7 +10,6 @@ export default function DriveHistoryChart({ history, currentSituation, team }) {
 
   useEffect(() => {
     if (chartRef.current && history.length > 0) {
-      // Destroy previous chart instance if it exists
       if (chartInstance.current) {
         chartInstance.current.destroy();
       }
@@ -36,15 +35,27 @@ export default function DriveHistoryChart({ history, currentSituation, team }) {
               title: {
                 display: true,
                 text: 'Yard Line'
+              },
+              // ADD THIS NEW TICKS CONFIGURATION:
+              ticks: {
+                callback: function(value) {
+                  const normalizedYardLine = value > 50 ? 100 - value : value;
+                  const fieldSide = value > 50 ? 'Opp' : 'Your';
+                  return `${fieldSide} ${normalizedYardLine}`;
+                }
               }
             }
           },
           plugins: {
             tooltip: {
               callbacks: {
+                // UPDATE THE TOOLTIP LABELS:
                 label: (context) => {
                   const play = history[context.dataIndex];
+                  const normalizedYardLine = play.yardline > 50 ? 100 - play.yardline : play.yardline;
+                  const fieldSide = play.yardline > 50 ? 'Opp' : 'Your';
                   return [
+                    `Field Position: ${fieldSide} ${normalizedYardLine}`,
                     `Down: ${play.down}`,
                     `Distance: ${play.distance}`,
                     `Play: ${play.playType.toUpperCase()}`
@@ -57,7 +68,6 @@ export default function DriveHistoryChart({ history, currentSituation, team }) {
       });
     }
 
-    // Cleanup function to destroy chart on unmount
     return () => {
       if (chartInstance.current) {
         chartInstance.current.destroy();

@@ -1,29 +1,24 @@
 import React from 'react';
 import './TendencyAnalysis.css';
 
-// Mock data - replace with actual API calls
-const teamTendencies = {
-  DET: {
-    1: { pass: 62, run: 38 },
-    2: { pass: 45, run: 55 },
-    3: { pass: 78, run: 22 },
-    4: { pass: 35, run: 65 }
-  },
-  GB: {
-    1: { pass: 58, run: 42 },
-    2: { pass: 52, run: 48 },
-    3: { pass: 82, run: 18 },
-    4: { pass: 40, run: 60 }
-  }
-};
+export default function TendencyAnalysis({ team, down, distance, unit }) {
+  // Calculate tendencies based on unit (offense/defense)
+  const tendencies = unit === 'offense' 
+    ? {
+        'Pass': 60,
+        'Run': 40
+      }
+    : {
+        'Zone': 55,
+        'Man': 35,
+        'Blitz': 10
+      };
 
-export default function TendencyAnalysis({ team, down, distance }) {
-  const tendencies = teamTendencies[team]?.[down] || { pass: 50, run: 50 };
   const distanceCategory = distance >= 7 ? 'Long' : distance >= 3 ? 'Medium' : 'Short';
 
   return (
     <div className="tendency-analysis">
-      <h3 className="title">{team} Tendencies</h3>
+      <h3 className="title">{team} {unit} Tendencies</h3>
       
       <div className="tendency-grid">
         <div className="tendency-item">
@@ -37,22 +32,16 @@ export default function TendencyAnalysis({ team, down, distance }) {
       </div>
       
       <div className="tendency-bars">
-        <div className="tendency-bar">
-          <div 
-            className="bar-fill pass" 
-            style={{ width: `${tendencies.pass}%` }}
-          >
-            <span className="bar-label">Pass {tendencies.pass}%</span>
+        {Object.entries(tendencies).map(([play, percent]) => (
+          <div key={play} className="tendency-bar">
+            <div 
+              className={`bar-fill ${play === 'Pass' || play === 'Zone' ? 'pass' : 'run'}`}
+              style={{ width: `${percent}%` }}
+            >
+              <span className="bar-label">{play} {percent}%</span>
+            </div>
           </div>
-        </div>
-        <div className="tendency-bar">
-          <div 
-            className="bar-fill run" 
-            style={{ width: `${tendencies.run}%` }}
-          >
-            <span className="bar-label">Run {tendencies.run}%</span>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
