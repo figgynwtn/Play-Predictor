@@ -1,7 +1,10 @@
 import React from 'react';
 import './VisualizationBase.css';
 
-export default function DefenseVisualization({ playType, confidence, formation }) {
+export default function DefenseVisualization({ playType, confidence, formation, yardline = 50 }) {
+  // Convert yardline (0-100) to percentage (8.33%-91.67%)
+  const yardlinePosition = 8.33 + (83.33 * (yardline / 100));
+  
   // Yard numbers (10-50-40-10)
   const yardNumbers = [10, 20, 30, 40, 50, 40, 30, 20, 10];
   
@@ -140,13 +143,12 @@ export default function DefenseVisualization({ playType, confidence, formation }
             ))}
           </div>
           
-          {/* Defense Confidence Circle */}
-          <div className="defense-play">
-            <div className="football-confidence">{confidence}%</div>
+          {/* Defense Confidence Circle - Updated to use yardlinePosition */}
+          <div className="play-indicator-football">
           </div>
           
           {/* Play Indicator */}
-          <div className="play-indicator">
+          <div className="play-indicator" style={{ left: `${yardlinePosition}%` }}>
             <div className="play-name">{playType}</div>
             <div className="coverage-type">{formation}</div>
           </div>

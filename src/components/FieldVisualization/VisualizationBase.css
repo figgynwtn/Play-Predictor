@@ -132,45 +132,28 @@
   bottom: 40%; /* Higher vertical position */
 }
 
-/* Confidence Circles - RESTORED */
-.defense-play {
+.play-indicator-football {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  position: relative;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #FFA726, #FB8C00);
-}
-
-.offense-play {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 100;
-  position: relative;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-image: url('/public/images/football.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-.offense-play.pass {
-  background: linear-gradient(135deg, #36A2EB, #1E88E5);
-  left: 30%;
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.05); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
-.offense-play.run {
-  background: linear-gradient(135deg, #FF6384, #E53935);
-  left: 70%;
+.play-indicator-football {
+  animation: pulse 2s infinite;
 }
 
 .football-confidence {
@@ -178,6 +161,22 @@
   font-size: 1.5rem;
   font-weight: bold;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* New yardline input styles */
+.yardline-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.yardline-input-group input {
+  flex: 1;
+  min-width: 60px;
+}
+
+.yardline-input-group select {
+  flex: 1;
+  min-width: 120px;
 }
 
 /* Mobile adjustments for confidence circles */
@@ -190,6 +189,16 @@
   
   .football-confidence {
     font-size: 1.2rem;
+  }
+
+  .yardline-input-group {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .yardline-input-group input,
+  .yardline-input-group select {
+    width: 100%;
   }
 }
 

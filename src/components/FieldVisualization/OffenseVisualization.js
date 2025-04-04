@@ -1,8 +1,11 @@
 import React from 'react';
 import './VisualizationBase.css';
 
-export default function OffenseVisualization({ play, confidence, formation }) {
+export default function OffenseVisualization({ play, confidence, formation, yardline = 50 }) {
   const isPass = play.toLowerCase().includes('pass');
+  
+  // Convert yardline (0-100) to percentage (8.33%-91.67%)
+  const yardlinePosition = 8.33 + (83.33 * (yardline / 100));
   
   // Yard numbers (10-50-40-10)
   const yardNumbers = [10, 20, 30, 40, 50, 40, 30, 20, 10];
@@ -142,13 +145,12 @@ export default function OffenseVisualization({ play, confidence, formation }) {
             ))}
           </div>
           
-          {/* Play Visualization */}
-          <div className={`offense-play ${isPass ? 'pass' : 'run'}`}>
-            <div className="football-confidence">{confidence}%</div>
+          {/* Play Visualization - Updated to use yardlinePosition */}
+          <div className="play-indicator-football"> 
           </div>
           
           {/* Play Indicator */}
-          <div className="play-indicator" style={{ left: isPass ? '30%' : '70%' }}>
+          <div className="play-indicator" style={{ left: `${yardlinePosition}%` }}>
             <div className="play-name">{play}</div>
             <div className="coverage-type">{formation}</div>
           </div>

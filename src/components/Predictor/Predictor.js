@@ -447,14 +447,12 @@ export default function Predictor() {
             {state.selectedUnit === 'offense' ? (
               <OffenseVisualization
                 play={state.prediction.playType}
-                confidence={state.prediction.confidence}
                 formation={state.prediction.formation}
               />
             ) : (
               <DefenseVisualization
                 playType={state.prediction.playType}
                 formation={state.prediction.formation}
-                confidence={state.prediction.confidence}
               />
             )}
           </div>
