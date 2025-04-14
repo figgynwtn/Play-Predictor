@@ -2,7 +2,6 @@ import React from 'react';
 import './VisualizationBase.css';
 
 export default function OffenseVisualization({ play, confidence, formation, yardline = 50 }) {
-  const isPass = play.toLowerCase().includes('pass');
   
   // Convert yardline (0-100) to percentage (8.33%-91.67%)
   const yardlinePosition = 8.33 + (83.33 * (yardline / 100));

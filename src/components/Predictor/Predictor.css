@@ -179,6 +179,26 @@
   box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
 }
 
+.yardline-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.yardline-input-group input {
+  width: 60px;
+  text-align: right;
+}
+
+.yardline-input-group select {
+  flex-grow: 1;
+}
+
+/* Highlight midfield when selected */
+.yardline-input-group select option[value="midfield"] {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
 .checkbox-group {
   flex-direction: row;
   align-items: center;

@@ -16,10 +16,45 @@ const DEFENSIVE_PLAY_TYPES = [
   'Tampa 2', 'Spy', 'Prevent'
 ];
 const DEFENSIVE_FORMATIONS = ['4-3', '3-4', 'Nickel', 'Dime'];
-const OFFENSIVE_PLAY_TYPES = [
-  'Slant', 'Out Route', 'Post Route', 'Screen Pass', 
-  'HB Dive', 'Outside Zone', 'Play Action', 'Draw Play'
-];
+const OFFENSIVE_PLAY_TYPES = {
+  PASS: [
+    'Slant', 
+    'Out', 
+    'Post', 
+    'Screen Pass',
+    'Deep Pass',
+    'Play Action',
+    'Go',
+    'Corner',
+    'Dig',
+    'Hook',
+    'Arrow',
+    'Option',
+    'Trick Play',
+    'Hail Mary'
+
+  ],
+  RUN: [
+    'Dive', 
+    'Outside Zone',
+    'Draw',
+    'Counter',
+    'Power Run',
+    'Up The Middle',
+    'Iso',
+    'Off Tackle',
+    'Toss',
+    'Sweep',
+    'Trap',
+    'Bootleg',
+    'Quarterback Sneak',
+    'End-around',
+    'Reverse',
+    'Option'
+
+  ]
+};
+const ALL_OFFENSIVE_PLAYS = [...OFFENSIVE_PLAY_TYPES.PASS, ...OFFENSIVE_PLAY_TYPES.RUN];
 const OFFENSIVE_FORMATIONS = ['Shotgun', 'Under Center', 'Pistol', 'I Formation', 'Empty'];
 const SITUATION_PRESETS = [
   { label: "1st & 10", down: 1, ydstogo: 10, yardline: 35 },
@@ -28,6 +63,29 @@ const SITUATION_PRESETS = [
   { label: "2 Minute Drill", timeLeft: 120, noHuddle: true, yardline: 25 },
   { label: "4th Down", down: 4, ydstogo: 2, yardline: 50 }
 ];
+
+const isHailMarySituation = (situation) => {
+  return (
+    situation.timeLeft < 30 && 
+    situation.yardline > 50 && 
+    situation.down === 4 && 
+    situation.ydstogo >= 10 &&
+    !situation.noHuddle // Assuming noHuddle means timeouts available
+  );
+};
+
+const adjustForDesperation = (prediction, situation) => {
+  if (isHailMarySituation(situation)) {
+    return {
+      ...prediction,
+      playType: 'Hail Mary',
+      formation: 'Shotgun',
+      confidence: 95, // High confidence for clear Hail Mary situations
+      suggestedPlay: 'Prevent' // Standard defense against Hail Mary
+    };
+  }
+  return prediction;
+};
 
 // Helper functions
 const predictBlitz = ({ down, ydstogo }) => down === 3 && ydstogo > 7 ? 0.75 : 0.35;
@@ -139,6 +197,18 @@ export default function Predictor() {
     return () => { isMounted = false; };
   }, []);
 
+  useEffect(() => {
+    if (state.situation.yardline === 50) {
+      setState(prev => ({
+        ...prev,
+        situation: {
+          ...prev.situation,
+          yardline: 50 // This ensures it's exactly 50
+        }
+      }));
+    }
+  }, [state.situation.yardline]);
+
   // Model training
   const trainTeamModel = useCallback(async (teamData, unit) => {
     const filteredData = filterTeamData(teamData, state.selectedTeam, unit);
@@ -159,7 +229,7 @@ export default function Predictor() {
     const labels = tf.tensor2d(
       filteredData.map(play => [
         (unit === 'defense' ? DEFENSIVE_PLAY_TYPES.indexOf(play.defensive_play_type) / DEFENSIVE_PLAY_TYPES.length 
-          : OFFENSIVE_PLAY_TYPES.indexOf(play.play_type) / OFFENSIVE_PLAY_TYPES.length),
+          : ALL_OFFENSIVE_PLAYS.indexOf(play.play_type) / ALL_OFFENSIVE_PLAYS.length),
         (unit === 'offense' ? OFFENSIVE_FORMATIONS.indexOf(play.formation) / OFFENSIVE_FORMATIONS.length
           : DEFENSIVE_FORMATIONS.indexOf(play.formation) / DEFENSIVE_FORMATIONS.length),
         (play.yards_gained || 0) / 20,
@@ -204,28 +274,36 @@ export default function Predictor() {
         state.situation.passRushers,
         state.situation.defendersInBox
       ]])).array();
-
+  
       const [playTypeBin, formationBin, yardsNorm, wp] = prediction[0];
+      
       const playType = state.selectedUnit === 'offense'
-        ? OFFENSIVE_PLAY_TYPES[Math.floor(playTypeBin * OFFENSIVE_PLAY_TYPES.length)] || 'Slant'
+        ? ALL_OFFENSIVE_PLAYS[Math.floor(playTypeBin * ALL_OFFENSIVE_PLAYS.length)] || 'Slant'
         : DEFENSIVE_PLAY_TYPES[Math.floor(playTypeBin * DEFENSIVE_PLAY_TYPES.length)] || 'Cover 2';
       
-      const formation = state.selectedUnit === 'offense'
-        ? OFFENSIVE_FORMATIONS[Math.floor(formationBin * OFFENSIVE_FORMATIONS.length)] || 'Shotgun'
-        : DEFENSIVE_FORMATIONS[Math.floor(formationBin * DEFENSIVE_FORMATIONS.length)] || '4-3';
-
+      const isPass = state.selectedUnit === 'offense' ? OFFENSIVE_PLAY_TYPES.PASS.includes(playType) : false;
+      const playCategory = isPass ? 'Pass' : 'Run';
+  
+      const rawPrediction = {
+        playType,
+        playCategory,
+        formation: state.selectedUnit === 'offense'
+          ? OFFENSIVE_FORMATIONS[Math.floor(formationBin * OFFENSIVE_FORMATIONS.length)] || 'Shotgun'
+          : DEFENSIVE_FORMATIONS[Math.floor(formationBin * DEFENSIVE_FORMATIONS.length)] || '4-3',
+        expectedYards: Math.round(yardsNorm * 20),
+        confidence: Math.round(Math.max(playTypeBin, 1-playTypeBin) * 100),
+        winProbability: wp,
+        blitzProbability: predictBlitz(state.situation),
+        suggestedPlay: suggestCounterPlay(playType, state.situation, state.selectedUnit)
+      };
+  
+      // Apply situational overrides (like Hail Mary)
+      const finalPrediction = adjustForDesperation(rawPrediction, state.situation);
+  
       setState(prev => ({
         ...prev,
         model,
-        prediction: {
-          playType,
-          formation,
-          expectedYards: Math.round(yardsNorm * 20),
-          confidence: Math.round(Math.max(playTypeBin, 1-playTypeBin) * 100),
-          winProbability: wp,
-          blitzProbability: predictBlitz(prev.situation),
-          suggestedPlay: suggestCounterPlay(playType, prev.situation, prev.selectedUnit)
-        },
+        prediction: finalPrediction,
         isLoading: false,
         driveHistory: [
           ...prev.driveHistory.slice(-9),
@@ -233,8 +311,9 @@ export default function Predictor() {
             down: prev.situation.down,
             distance: prev.situation.ydstogo,
             yardline: prev.situation.yardline,
-            playType,
-            formation
+            playType: finalPrediction.playType,
+            playCategory: finalPrediction.playCategory,
+            formation: finalPrediction.formation
           }
         ]
       }));
@@ -320,23 +399,58 @@ export default function Predictor() {
 
           <div className="input-group">
             <label>Field Position</label>
-            <select 
-              name="yardline" 
-              value={state.situation.yardline} 
-              onChange={handleInputChange}
-            >
-              {Array.from({length: 51}, (_, i) => {
-                const yardLine = i;
-                return yardLine === 50 ? (
-                  <option key={yardLine} value={50}>50 (Midfield)</option>
-                ) : (
-                  <React.Fragment key={yardLine}>
-                    <option value={yardLine}>{yardLine} (Your Side)</option>
-                    <option value={100-yardLine}>{100-yardLine} (Opponent Side)</option>
-                  </React.Fragment>
-                );
-              })}
-            </select>
+            <div className="yardline-input-group">
+              <input
+                type="number"
+                name="yardline"
+                min="0"
+                max="50"
+                value={state.situation.yardline > 50 ? 100 - state.situation.yardline : state.situation.yardline}
+                onChange={(e) => {
+                  const yardline = parseInt(e.target.value) || 0;
+                  const adjustedYardline = Math.min(50, Math.max(0, yardline));
+                  setState(prev => ({
+                    ...prev,
+                    situation: {
+                      ...prev.situation,
+                      yardline: prev.situation.yardline > 50 
+                        ? 100 - adjustedYardline
+                        : adjustedYardline
+                    }
+                  }));
+                }}
+              />
+              <select
+                value={state.situation.yardline === 50 ? 'midfield' : 
+                      state.situation.yardline <= 50 ? 'own' : 'opponent'}
+                onChange={(e) => {
+                  const currentYardline = state.situation.yardline > 50 
+                    ? 100 - state.situation.yardline 
+                    : state.situation.yardline;
+                  
+                  let newYardline;
+                  if (e.target.value === 'midfield') {
+                    newYardline = 50;
+                  } else {
+                    newYardline = e.target.value === 'own' 
+                      ? currentYardline 
+                      : 100 - currentYardline;
+                  }
+
+                  setState(prev => ({
+                    ...prev,
+                    situation: {
+                      ...prev.situation,
+                      yardline: newYardline
+                    }
+                  }));
+                }}
+              >
+                <option value="own">Your Side</option>
+                <option value="opponent">Opponent Side</option>
+                <option value="midfield">Midfield</option>
+              </select>
+            </div>
           </div>
 
           <div className="input-group">
@@ -441,13 +555,13 @@ export default function Predictor() {
       {state.prediction && (
         <div className="results-panel">
           <div className="play-visualization">
-            <div className="centered-logo">
-              <TeamLogos team={state.selectedTeam} size={80} />
-            </div>
+            <TeamLogos team={state.selectedTeam} size={80} />
             {state.selectedUnit === 'offense' ? (
               <OffenseVisualization
                 play={state.prediction.playType}
+                playCategory={state.prediction.playCategory}
                 formation={state.prediction.formation}
+                yardline={state.situation.yardline}
               />
             ) : (
               <DefenseVisualization
@@ -456,12 +570,17 @@ export default function Predictor() {
               />
             )}
           </div>
-
+          
           <div className="play-details">
-            <h3>
-              {state.prediction.playType}
+            <div className="play-header">
+              <h3>{state.prediction.playType}</h3>
+              {state.selectedUnit === 'offense' && (
+                <span className={`play-type-badge ${state.prediction.playCategory.toLowerCase()}`}>
+                  {state.prediction.playCategory}
+                </span>
+              )}
               <span className="confidence-badge">{state.prediction.confidence}% confidence</span>
-            </h3>
+            </div>
             <div className="detail-grid">
               <div className="detail-item">
                 <h4>Formation</h4>
@@ -477,8 +596,8 @@ export default function Predictor() {
               </div>
               {state.selectedUnit === 'defense' && (
                 <div className="detail-item">
-                  <h4>Defensive Strategy</h4>
-                  <p>{state.prediction.playType}</p>
+                  <h4>Blitz Probability</h4>
+                  <p>{(state.prediction.blitzProbability * 100).toFixed(0)}%</p>
                 </div>
               )}
               <div className="detail-item">
